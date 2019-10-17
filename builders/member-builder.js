@@ -16,7 +16,7 @@ module.exports = {
     builder.push(`**${i18n.translate("ConstantsAndVariables")}**`);
     builder.push("\n");
     builder.push("\n");
-    builder.push("```js");
+    builder.push("```solidity");
     builder.push("\n");
 
     const groups = enumerable.from(nodes).groupBy(function(x) {

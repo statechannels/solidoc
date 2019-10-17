@@ -17,7 +17,7 @@ module.exports = {
       return dataType + " " + argumentName;
     }).toArray();
 
-    builder.push("```js");
+    builder.push("```solidity");
     builder.push("\n");
     builder.push(`modifier ${node.name}(`);
 

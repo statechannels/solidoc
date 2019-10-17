@@ -54,7 +54,7 @@ module.exports = {
       parameterList.push(`${dataType} ${argumentName}`);
     }
 
-    builder.push("```js");
+    builder.push("```solidity");
     builder.push("\n");
     builder.push(`function ${node.name}(`);
 

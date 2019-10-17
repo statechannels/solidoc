@@ -12,7 +12,7 @@ module.exports = {
     builder.push(`**${i18n.translate("Events")}**`);
     builder.push("\n");
     builder.push("\n");
-    builder.push("```js");
+    builder.push("```solidity");
     builder.push("\n");
 
     for(let i in nodes) {

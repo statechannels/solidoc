@@ -32,7 +32,7 @@ module.exports = {
       return clean();
     }
 
-    code.push("```js");
+    code.push("```solidity");
     code.push("\n");
     code.push("constructor(");
 

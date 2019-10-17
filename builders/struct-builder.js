@@ -12,7 +12,7 @@ module.exports = {
     builder.push(`### ${node.name}`);
     builder.push("\n");
     builder.push("\n");
-    builder.push("```js");
+    builder.push("```solidity");
     builder.push("\n");
     builder.push(`struct ${node.name} {`);
     builder.push("\n");
