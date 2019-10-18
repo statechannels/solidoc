@@ -13,7 +13,7 @@ module.exports = {
       return template.replace("{{Enumerators}}", "");
     }
 
-    builder.push(`**${i18n.translate("Enums")}**`);
+    builder.push(`## **${i18n.translate("Enums")}**`);
     builder.push("\n");
 
     for(let i in nodes) {
