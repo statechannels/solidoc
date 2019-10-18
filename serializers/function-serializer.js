@@ -41,7 +41,8 @@ module.exports = {
         parameterList.push(`${dataType} ${argumentName}`);
       }
 
-      return `- [${x.name}(${parameterList.join(", ")})](#${x.name.toLowerCase()})`;
+      return `- [${x.name}](#${x.name.toLowerCase()})`; // exclude parameters
+      // return `- [${x.name}(${parameterList.join(", ")})](#${x.name.toLowerCase()})`; // include parameters
     }).toArray();
 
     template = template.replace("{{FunctionTitle}}", i18n.translate("Functions"));
