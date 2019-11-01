@@ -4,8 +4,6 @@ const nodeHelper = require("../helpers/node-helper");
 const constructorBuilder = require("../builders/constructor-builder");
 const i18n = require("../i18n");
 const util = require("util");
-const path = require("path");
-const relative = require("path").relative;
 
 module.exports = {
   serialize: function(contract, template, contracts) {
@@ -38,7 +36,7 @@ module.exports = {
     function getContractPath() {
       const sourcePath = contract.sourcePath;
       const file = sourcePath.replace(global.config.pathToRoot, "");
-      const link = `[${file.replace(/^\/|\/$/g, "")}](${path.join(global.config.pathToRepo,file.replace(/^\/|\/$/g, ""))})`; 
+      const link = `[${file.replace(/^\/|\/$/g, '')}](${[global.config.repoUrl, file.replace(/^\/|\/$/g, '')].join('')})`;
 
       return util.format(i18n.translate("ViewSource"), link);
     }
