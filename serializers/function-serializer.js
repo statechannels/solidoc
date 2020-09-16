@@ -10,7 +10,7 @@ const argumentBuilder = require("../builders/argument-builder");
 const i18n = require("../i18n");
 
 module.exports = {
-  serialize: function(contract, template, contracts) {
+  serialize: function (contract, template, contracts) {
     function clean() {
       template = template.replace("{{FunctionTitle}}", "");
       template = template.replace("{{FunctionList}}", "");
@@ -21,33 +21,49 @@ module.exports = {
 
     const allFunctions = nodeHelper.getFunctions(contract);
 
-    const functionNodes = enumerable.from(allFunctions).where(function(x) {
-      return !x.isConstructor;
-    }).toArray();
+    const functionNodes = enumerable
+      .from(allFunctions)
+      .where(function (x) {
+        return !x.isConstructor;
+      })
+      .toArray();
 
-    if(!functionNodes || !functionNodes.length) {
+    if (!functionNodes || !functionNodes.length) {
       return clean();
     }
 
     const definitionList = [];
-    const functionList = enumerable.from(functionNodes).select(function(x) {
-      const parameters = x.parameters.parameters || [];
-      const parameterList = [];
+    const functionList = enumerable
+      .from(functionNodes)
+      .select(function (x) {
+        const parameters = x.parameters.parameters || [];
+        const parameterList = [];
 
-      for(let i in parameters) {
-        const parameter = parameters[i];
-        const argumentName = parameter.name;
-        const dataType = parameter.typeDescriptions.typeString.replace("contract ", "");
-        parameterList.push(`${dataType} ${argumentName}`);
-      }
+        for (let i in parameters) {
+          const parameter = parameters[i];
+          const argumentName = parameter.name;
+          const dataType = parameter.typeDescriptions.typeString.replace(
+            "contract ",
+            ""
+          );
+          parameterList.push(`${dataType} ${argumentName}`);
+        }
 
-      return `- [${x.name}](#${x.name.toLowerCase()})`; // exclude parameters
-      // return `- [${x.name}(${parameterList.join(", ")})](#${x.name.toLowerCase()})`; // include parameters
-    }).toArray();
+        if (!x.name) {
+          x.name = "constructor"; // the constructor function has no name
+        }
 
-    template = template.replace("{{FunctionTitle}}", i18n.translate("Functions"));
+        return `- [${x.name}](#${x.name.toLowerCase()})`; // exclude parameters
+        // return `- [${x.name}(${parameterList.join(", ")})](#${x.name.toLowerCase()})`; // include parameters
+      })
+      .toArray();
 
-    for(let i in functionNodes) {
+    template = template.replace(
+      "{{FunctionTitle}}",
+      i18n.translate("Functions")
+    );
+
+    for (let i in functionNodes) {
       const node = functionNodes[i];
 
       let functionTemplate = templateHelper.FunctionTemplate;
@@ -58,17 +74,41 @@ module.exports = {
       var parameters = (node.parameters || {}).parameters;
       const args = argumentBuilder.build(node.documentation, parameters);
 
-      functionTemplate = functionTemplate.replace("{{FunctionName}}", node.name);
-      functionTemplate = functionTemplate.replace("{{FQFunctionName}}", `${contract.contractName}.${node.name}`);
-      functionTemplate = functionTemplate.replace("{{FunctionNameHeading}}", `### ${node.name}`);
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionName}}",
+        node.name
+      );
+      functionTemplate = functionTemplate.replace(
+        "{{FQFunctionName}}",
+        `${contract.contractName}.${node.name}`
+      );
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionNameHeading}}",
+        `### ${node.name}`
+      );
       functionTemplate = functionTemplate.replace("{{Super}}", base);
       functionTemplate = functionTemplate.replace("{{References}}", references);
-      functionTemplate = functionTemplate.replace("{{FunctionDescription}}", description);
-      functionTemplate = functionTemplate.replace("{{FunctionCode}}", functionCode);
-      functionTemplate = functionTemplate.replace("{{FunctionArguments}}", args);
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionDescription}}",
+        description
+      );
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionCode}}",
+        functionCode
+      );
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionArguments}}",
+        args
+      );
 
-      functionTemplate = functionTemplate.replace("{{TableHeader}}", parameters ? templateHelper.TableHeaderTemplate : "");
-      functionTemplate = functionTemplate.replace("{{FunctionArgumentsHeading}}", parameters ? `**${i18n.translate("Arguments")}**` : "");
+      functionTemplate = functionTemplate.replace(
+        "{{TableHeader}}",
+        parameters ? templateHelper.TableHeaderTemplate : ""
+      );
+      functionTemplate = functionTemplate.replace(
+        "{{FunctionArgumentsHeading}}",
+        parameters ? `**${i18n.translate("Arguments")}**` : ""
+      );
 
       definitionList.push(functionTemplate);
     }
@@ -77,5 +117,5 @@ module.exports = {
     template = template.replace("{{AllFunctions}}", definitionList.join("\n"));
 
     return template;
-  }
+  },
 };
