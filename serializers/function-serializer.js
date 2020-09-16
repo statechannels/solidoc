@@ -21,12 +21,18 @@ module.exports = {
 
     const allFunctions = nodeHelper.getFunctions(contract);
 
-    const functionNodes = enumerable
+    let functionNodes = enumerable
       .from(allFunctions)
-      .where(function (x) {
-        return !x.isConstructor;
-      })
+      // .where(function (x) {
+      //   return !x.isConstructor;
+      // }) // I don't think this works
       .toArray();
+
+    functionNodes = functionNodes.map((node) => {
+      let name = node.name;
+      if (name.length < 1) name = "constructor";
+      return { ...node, name };
+    });
 
     if (!functionNodes || !functionNodes.length) {
       return clean();
@@ -47,10 +53,6 @@ module.exports = {
             ""
           );
           parameterList.push(`${dataType} ${argumentName}`);
-        }
-
-        if (!x.name) {
-          x.name = "constructor"; // the constructor function has no name
         }
 
         return `- [${x.name}](#${x.name.toLowerCase()})`; // exclude parameters

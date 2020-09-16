@@ -5,13 +5,13 @@ const nodeHelper = require("../helpers/node-helper");
 const i18n = require("../i18n");
 
 module.exports = {
-  build: function(node) {
+  build: function (node) {
     function getReturnParameters() {
       const builder = [];
 
       var returnParameters = nodeHelper.getReturnParameters(node);
 
-      if(!returnParameters || !returnParameters.length) {
+      if (!returnParameters || !returnParameters.length) {
         return "";
       }
 
@@ -19,9 +19,11 @@ module.exports = {
 
       const returnList = [];
 
-      for(let i in returnParameters) {
+      for (let i in returnParameters) {
         const parameter = returnParameters[i];
-        returnList.push(`${parameter.name} ${parameter.typeDescriptions.typeString}`.trim());
+        returnList.push(
+          `${parameter.name} ${parameter.typeDescriptions.typeString}`.trim()
+        );
       }
 
       builder.push(returnList.join(", "));
@@ -31,7 +33,7 @@ module.exports = {
       return builder.join("");
     }
 
-    if(!node || !node.parameters) {
+    if (!node || !node.parameters) {
       return "";
     }
 
@@ -40,23 +42,36 @@ module.exports = {
     const parameters = node.parameters.parameters || [];
     const documentation = node.documentation;
 
-    const returnDocumentation = documentationHelper.get(documentation, "return");
+    const returnDocumentation = documentationHelper.get(
+      documentation,
+      "return"
+    );
     const parameterList = [];
 
-    const modifierList = enumerable.from(node.modifiers).select(function(x) {
-      return x.modifierName.name;
-    }).toArray();
+    const modifierList = enumerable
+      .from(node.modifiers)
+      .select(function (x) {
+        return x.modifierName.name;
+      })
+      .toArray();
 
-    for(let i in parameters) {
+    for (let i in parameters) {
       const parameter = parameters[i];
       const argumentName = parameter.name;
-      const dataType = parameter.typeDescriptions.typeString.replace("contract ", "");
+      const dataType = parameter.typeDescriptions.typeString.replace(
+        "contract ",
+        ""
+      );
       parameterList.push(`${dataType} ${argumentName}`);
     }
 
     builder.push("```solidity");
     builder.push("\n");
-    builder.push(`function ${node.name}(`);
+    if (node.name === "constructor") {
+      builder.push(`${node.name}(`);
+    } else {
+      builder.push(`function ${node.name}(`);
+    }
 
     builder.push(parameterList.join(", "));
 
@@ -66,13 +81,13 @@ module.exports = {
 
     builder.push(` ${node.stateMutability}`);
 
-    if(modifierList && modifierList.length) {
+    if (modifierList && modifierList.length) {
       builder.push(` ${modifierList.join(" ")} `);
     }
 
     const returnParameters = getReturnParameters();
 
-    if(returnParameters) {
+    if (returnParameters) {
       builder.push("\n");
       builder.push(returnParameters);
     }
@@ -80,7 +95,7 @@ module.exports = {
     builder.push("\n");
     builder.push("```");
 
-    if(!returnDocumentation) {
+    if (!returnDocumentation) {
       return builder.join("");
     }
 
@@ -94,5 +109,5 @@ module.exports = {
     builder.push("\n");
 
     return builder.join("");
-  }
+  },
 };
