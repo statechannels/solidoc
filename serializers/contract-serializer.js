@@ -6,7 +6,7 @@ const i18n = require("../i18n");
 const util = require("util");
 
 module.exports = {
-  serialize: function(contract, template, contracts) {
+  serialize: function (contract, template, contracts) {
     function getTitle() {
       const contractNode = nodeHelper.getContractNode(contract);
       const documentation = contractNode.documentation;
@@ -14,8 +14,10 @@ module.exports = {
 
       let title = `${contract.contractName}.sol`;
 
-      if(contractTitle) {
-        title = `${contractTitle.replace("\r\n", "\n")} (${contract.contractName}.sol)`;
+      if (contractTitle) {
+        title = `${contractTitle.replace("\r\n", "\n")} (${
+          contract.contractName
+        }.sol)`;
       }
 
       return title;
@@ -36,7 +38,19 @@ module.exports = {
     function getContractPath() {
       const sourcePath = contract.sourcePath;
       const file = sourcePath.replace(global.config.pathToRoot, "");
-      const link = `[${file.replace(/^\/|\/$/g, '')}](${[global.config.repoUrl, file.replace(/^\/|\/$/g, '')].join('')})`;
+      let link;
+      console.log(sourcePath.slice(0, 13));
+      if (sourcePath.slice(0, 24) === "@openzeppelin/contracts/") {
+        link = `[${file.replace(/^\/|\/$/g, "")}](${[
+          "https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/",
+          file.slice(24).replace(/^\/|\/$/g, ""),
+        ].join("")})`;
+      } else {
+        link = `[${file.replace(/^\/|\/$/g, "")}](${[
+          global.config.repoUrl,
+          file.replace(/^\/|\/$/g, ""),
+        ].join("")})`;
+      }
 
       return util.format(i18n.translate("ViewSource"), link);
     }
@@ -44,7 +58,7 @@ module.exports = {
     function getAnchors() {
       const anchors = [];
 
-      for(let i in contracts) {
+      for (let i in contracts) {
         const contract = contracts[i];
 
         const anchor = `* [${contract.contractName}](${contract.contractName}.md)`;
@@ -58,13 +72,18 @@ module.exports = {
       const dependencyList = [];
       const dependencies = nodeHelper.getBaseContracts(contract);
 
-      for(let i in dependencies) {
+      for (let i in dependencies) {
         const dependency = dependencies[i];
-        dependencyList.push(`[${dependency.baseName.name}](${dependency.baseName.name}.md)`);
+        dependencyList.push(
+          `[${dependency.baseName.name}](${dependency.baseName.name}.md)`
+        );
       }
 
-      if(dependencyList && dependencyList.length) {
-        return `**${util.format(i18n.translate("Extends"), dependencyList.join(", "))}**`;
+      if (dependencyList && dependencyList.length) {
+        return `**${util.format(
+          i18n.translate("Extends"),
+          dependencyList.join(", ")
+        )}**`;
       }
 
       return "";
@@ -72,16 +91,24 @@ module.exports = {
 
     function getImplementation() {
       const implementationList = [];
-      const implementations = nodeHelper.getImplementations(contract, contracts);
+      const implementations = nodeHelper.getImplementations(
+        contract,
+        contracts
+      );
 
-      for(let i in implementations) {
+      for (let i in implementations) {
         const implementation = implementations[i];
 
-        implementationList.push(`[${implementation.contractName}](${implementation.contractName}.md)`);
+        implementationList.push(
+          `[${implementation.contractName}](${implementation.contractName}.md)`
+        );
       }
 
-      if(implementationList && implementationList.length) {
-        return `**${util.format(i18n.translate("DerivedContracts"), implementationList.join(", "))}**`;
+      if (implementationList && implementationList.length) {
+        return `**${util.format(
+          i18n.translate("DerivedContracts"),
+          implementationList.join(", ")
+        )}**`;
       }
 
       return "";
@@ -95,12 +122,21 @@ module.exports = {
     template = template.replace("{{ContractPath}}", getContractPath());
     template = template.replace("{{ContractTitle}}", getTitle());
     template = template.replace("{{ContractDescription}}", notice);
-    template = template.replace("{{ContractInheritancePath}}", getInheritancePath());
-    template = template.replace("{{ContractImplementations}}", getImplementation());
+    template = template.replace(
+      "{{ContractInheritancePath}}",
+      getInheritancePath()
+    );
+    template = template.replace(
+      "{{ContractImplementations}}",
+      getImplementation()
+    );
 
-    template = template.replace("{{AllContractsAnchor}}", getAnchors().join("\n"));
+    template = template.replace(
+      "{{AllContractsAnchor}}",
+      getAnchors().join("\n")
+    );
     template = template.replace("{{ABI}}", getAbi());
 
     return constructorBuilder.build(contract, template);
-  }
+  },
 };
