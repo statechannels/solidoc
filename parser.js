@@ -14,7 +14,10 @@ module.exports = {
     const contracts = [];
 
     let files = glob.sync(buildDirectory + "/**/*.json", {});
-    files = files.filter((file) => !/(.dbg.)/.test(file));
+    // compatibility with hardhat:
+    files = files.filter(
+      (file) => !/(.dbg.)/.test(file) && !/(build-info)/.test(file)
+    );
 
     for (let i = 0; i < files.length; i++) {
       const data = fs.readFileSync(files[i]);
